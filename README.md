@@ -36,8 +36,10 @@ pip install apache-airflow-providers-snowflake yfinance pandas
 ## System Architecture
 
 Workflow Diagram:
+```
 yfinance API → Airflow DAG 1 (ETL) → Snowflake RAW & STG tables → 
 Airflow DAG 2 (ML Forecast) → ADHOC Forecast table → ANALYTICS final table
+```
 DAG 1: Extract & load historical stock data
 
 DAG 2: Train ML Forecasting model and merge with ETL data
@@ -83,3 +85,32 @@ Connections:
 snowflake_conn → Add Snowflake credentials (user, password, account, warehouse, database)
 
 Variables:
+```SYMBOLS_JSON = ["IBM", "CSCO", "MSFT", "AAPL", "NVDA", "AMZN"]
+LOOKBACK_DAYS = 180
+HISTORICAL_TABLE = "RAW.MARKET_DATA"
+```
+##Code & Repository Structure
+```
+Lab1-Stock-Prediction/
+│
+├─ dags/
+│   ├─ part1_create_and_load.py
+│   └─ part2_train_predict.py
+│
+├─ README.md
+├─ requirements.txt
+└─ .gitignore
+```
+##Results & Findings
+Automatically retrieves 180 days of historical stock data for all symbols
+Generates 7-day forecasts using Snowflake ML Forecast
+Combines historical and forecast data in ANALYTICS.MARKET_DATA
+Airflow ensures automation, error handling, and transactional consistency
+Snowflake provides scalable storage, fast queries, and in-database ML capabilities
+
+##Future Enhancements
+Incorporate deep learning models (LSTM) for improved prediction accuracy
+Enable real-time stock streaming via WebSocket/Kafka
+Add technical indicators for richer features
+Integrate visualization tools (Tableau / Power BI)
+Implement alerts for significant stock trends
