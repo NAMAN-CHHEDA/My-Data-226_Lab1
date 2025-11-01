@@ -32,6 +32,7 @@ Financial analysts require a system to **forecast short-term stock prices** usin
 - Python packages:
 ```bash
 pip install apache-airflow-providers-snowflake yfinance pandas
+```
 System Architecture
 Workflow Diagram:
 
