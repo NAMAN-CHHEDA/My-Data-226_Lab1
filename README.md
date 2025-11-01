@@ -35,7 +35,7 @@ pip install apache-airflow-providers-snowflake yfinance pandas
 ```
 ---
 
-##System Architecture
+## System Architecture
 
 ## Workflow Diagram:
 ```bash
@@ -70,7 +70,7 @@ Both DAGs:
  - Use Airflow connections (snowflake_conn)
  - Use Airflow variables for symbols, lookback days, and table names
 
-##Airflow Configuration
+## Airflow Configuration
 Connections:
 
  - snowflake_conn → Add Snowflake credentials (user, password, account, warehouse, database)
@@ -80,8 +80,9 @@ Variables:
 SYMBOLS_JSON = ["IBM", "CSCO", "MSFT", "AAPL", "NVDA", "AMZN"]
 LOOKBACK_DAYS = 180
 HISTORICAL_TABLE = "RAW.MARKET_DATA"
+```
 Code & Repository Structure
-Copy code
+```bash
 Lab1-Stock-Prediction/
 │
 ├─ dags/
@@ -94,7 +95,7 @@ Lab1-Stock-Prediction/
 ```
 
 
-##Results & Findings
+## Results & Findings
 
  - Automatically retrieves 180 days of historical stock data for all symbols
  - Generates 7-day forecasts using Snowflake ML Forecast
@@ -102,7 +103,7 @@ Lab1-Stock-Prediction/
  - Airflow ensures automation, error handling, and transactional consistency
  - Snowflake provides scalable storage, fast queries, and in-database ML capabilities
 
-##Future Enhancements
+## Future Enhancements
 
  - Incorporate deep learning models (LSTM) for improved prediction accuracy
  - Enable real-time stock streaming via WebSocket/Kafka
