@@ -46,14 +46,17 @@ DAG 1: Extract & load historical stock data
 
 DAG 2: Train ML Forecasting model and merge with ETL data
 
-Snowflake Tables
-Table	Description	Key Fields / Constraints
-RAW.MARKET_DATA	Stores historical stock prices	SYMBOL (PK), DATE (PK), OPEN, HIGH, LOW, CLOSE, VOLUME
-RAW.MARKET_DATA_STG	Staging for transactional merge	SYMBOL, DATE, OPEN, HIGH, LOW, CLOSE, VOLUME
-ADHOC.MARKET_DATA_FORECAST	Stores 7-day forecasts	SYMBOL, DATE, PREDICTED_CLOSE
-ANALYTICS.MARKET_DATA	Final analytics table (union of RAW + Forecast)	SYMBOL, DATE, ACTUAL_CLOSE, PREDICTED_CLOSE
+## Snowflake Tables
 
-Note: All ETL and Forecast pipelines use SQL transactions with try/except blocks to ensure data consistency.
+| Table                     | Description                          | Key Fields / Constraints                                     |
+|---------------------------|--------------------------------------|-------------------------------------------------------------|
+| RAW.MARKET_DATA           | Stores historical stock prices       | SYMBOL (PK), DATE (PK), OPEN, HIGH, LOW, CLOSE, VOLUME    |
+| RAW.MARKET_DATA_STG       | Staging for transactional merge      | SYMBOL, DATE, OPEN, HIGH, LOW, CLOSE, VOLUME              |
+| ADHOC.MARKET_DATA_FORECAST| Stores 7-day forecasts               | SYMBOL, DATE, PREDICTED_CLOSE                               |
+| ANALYTICS.MARKET_DATA     | Final analytics table (union of RAW + Forecast) | SYMBOL, DATE, ACTUAL_CLOSE, PREDICTED_CLOSE |
+
+> **Note:** All ETL and Forecast pipelines use SQL transactions with `try/except` blocks to ensure data consistency.
+
 
 ## Airflow Pipelines (DAGs)
 1. ETL Pipeline (part1_create_and_load)
