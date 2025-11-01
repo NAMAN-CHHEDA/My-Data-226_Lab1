@@ -33,13 +33,15 @@ Financial analysts require a system to **forecast short-term stock prices** usin
 ```bash
 pip install apache-airflow-providers-snowflake yfinance pandas
 ```
-System Architecture
-Workflow Diagram:
+---
 
-sql
-Copy code
+##System Architecture
+
+## Workflow Diagram:
+```bash
 yfinance API → Airflow DAG 1 (ETL) → Snowflake RAW & STG tables → 
 Airflow DAG 2 (ML Forecast) → ADHOC Forecast table → ANALYTICS final table
+```
 DAG 1: Extract & load historical stock data
 
 DAG 2: Train ML Forecasting model and merge with ETL data
@@ -53,36 +55,28 @@ ANALYTICS.MARKET_DATA	Final analytics table (union of RAW + Forecast)	SYMBOL, DA
 
 Note: All ETL and Forecast pipelines use SQL transactions with try/except blocks to ensure data consistency.
 
-Airflow Pipelines (DAGs)
+## Airflow Pipelines (DAGs)
 1. ETL Pipeline (part1_create_and_load)
-Extracts historical stock data using yfinance API
-
-Loads data into RAW and RAW_STG tables
-
-Implements transactional MERGE operations
+ - Extracts historical stock data using yfinance API
+ - Loads data into RAW and RAW_STG tables
+ - Implements transactional MERGE operations
 
 2. ML Forecasting Pipeline (part2_train_predict)
-Trains Snowflake ML Forecast model on historical data
-
-Generates 7-day stock price forecasts
-
-Merges forecast results with historical data to create ANALYTICS.MARKET_DATA
+ - Trains Snowflake ML Forecast model on historical data
+ - Generates 7-day stock price forecasts
+ - Merges forecast results with historical data to create ANALYTICS.MARKET_DATA
 
 Both DAGs:
+ - Use Airflow connections (snowflake_conn)
+ - Use Airflow variables for symbols, lookback days, and table names
 
-Use Airflow connections (snowflake_conn)
-
-Use Airflow variables for symbols, lookback days, and table names
-
-Airflow Configuration
+##Airflow Configuration
 Connections:
 
-snowflake_conn → Add Snowflake credentials (user, password, account, warehouse, database)
+ - snowflake_conn → Add Snowflake credentials (user, password, account, warehouse, database)
 
 Variables:
-
-text
-Copy code
+```bash
 SYMBOLS_JSON = ["IBM", "CSCO", "MSFT", "AAPL", "NVDA", "AMZN"]
 LOOKBACK_DAYS = 180
 HISTORICAL_TABLE = "RAW.MARKET_DATA"
@@ -97,33 +91,23 @@ Lab1-Stock-Prediction/
 ├─ README.md
 ├─ requirements.txt
 └─ .gitignore
-GitHub Links for Codes:
+```
 
-ETL DAG
 
-ML Forecast DAG
+##Results & Findings
 
-Results & Findings
-Automatically retrieves 180 days of historical stock data for all symbols
+ - Automatically retrieves 180 days of historical stock data for all symbols
+ - Generates 7-day forecasts using Snowflake ML Forecast
+ - Combines historical and forecast data in ANALYTICS.MARKET_DATA
+ - Airflow ensures automation, error handling, and transactional consistency
+ - Snowflake provides scalable storage, fast queries, and in-database ML capabilities
 
-Generates 7-day forecasts using Snowflake ML Forecast
+##Future Enhancements
 
-Combines historical and forecast data in ANALYTICS.MARKET_DATA
+ - Incorporate deep learning models (LSTM) for improved prediction accuracy
+ - Enable real-time stock streaming via WebSocket/Kafka
+ - Add technical indicators for richer features
+ - Integrate visualization tools (Tableau / Power BI)
+ - Implement alerts for significant stock trends
 
-Airflow ensures automation, error handling, and transactional consistency
 
-Snowflake provides scalable storage, fast queries, and in-database ML capabilities
-
-Future Enhancements
-Incorporate deep learning models (LSTM) for improved prediction accuracy
-
-Enable real-time stock streaming via WebSocket/Kafka
-
-Add technical indicators for richer features
-
-Integrate visualization tools (Tableau / Power BI)
-
-Implement alerts for significant stock trends
-
-License
-This project is licensed under the MIT License.
