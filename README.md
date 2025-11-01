@@ -32,3 +32,54 @@ Financial analysts require a system to **forecast short-term stock prices** usin
 - Python packages:  
 ```bash
 pip install apache-airflow-providers-snowflake yfinance pandas
+```
+## System Architecture
+
+Workflow Diagram:
+yfinance API → Airflow DAG 1 (ETL) → Snowflake RAW & STG tables → 
+Airflow DAG 2 (ML Forecast) → ADHOC Forecast table → ANALYTICS final table
+DAG 1: Extract & load historical stock data
+
+DAG 2: Train ML Forecasting model and merge with ETL data
+
+Snowflake Tables
+Table	Description	Key Fields / Constraints
+RAW.MARKET_DATA	Stores historical stock prices	SYMBOL (PK), DATE (PK), OPEN, HIGH, LOW, CLOSE, VOLUME
+RAW.MARKET_DATA_STG	Staging for transactional merge	SYMBOL, DATE, OPEN, HIGH, LOW, CLOSE, VOLUME
+ADHOC.MARKET_DATA_FORECAST	Stores 7-day forecasts	SYMBOL, DATE, PREDICTED_CLOSE
+ANALYTICS.MARKET_DATA	Final analytics table (union of RAW + Forecast)	SYMBOL, DATE, ACTUAL_CLOSE, PREDICTED_CLOSE
+
+Notes:
+
+All ETL and Forecast pipelines use SQL transactions with try/except blocks to ensure data consistency.
+
+Airflow Pipelines (DAGs)
+1. ETL Pipeline (part1_create_and_load)
+
+Extracts historical stock data using yfinance API
+
+Loads data into RAW and RAW_STG tables
+
+Implements transactional MERGE operations
+
+2. ML Forecasting Pipeline (part2_train_predict)
+
+Trains Snowflake ML Forecast model on historical data
+
+Generates 7-day stock price forecasts
+
+Merges forecast results with historical data to create ANALYTICS.MARKET_DATA
+
+Both DAGs:
+
+Use Airflow connections (snowflake_conn)
+
+Use Airflow variables for symbols, lookback days, and table names
+
+Airflow Configuration
+
+Connections:
+
+snowflake_conn → Add Snowflake credentials (user, password, account, warehouse, database)
+
+Variables:
